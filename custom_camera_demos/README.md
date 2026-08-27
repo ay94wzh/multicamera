@@ -9,8 +9,15 @@ and look at the robot workspace, so each view covers the task well.
          |
    left(-55°)--front(0°)--right(+55°)      <- on a sphere of radius 1.2 m,
          |                                   centered at the table workspace,
-        bottom(-18°)                         looking at the robot arm
+        bottom(+5°)                          looking at the robot arm
 ```
+
+> Bottom camera history: it used to be at −18° (z ≈ 0.43 m), i.e. **below the
+> tabletop** (z = 0.8 m) — it could only see the table's underside and nothing
+> on the table. It is now at +5° (z ≈ 0.905 m, the lowest angle that clears the
+> table): a low frontal view that looks slightly up at the gripper while still
+> seeing the cube on the table. Tune further with `CAM_BOTTOM_ELEV`, e.g.
+> `CAM_BOTTOM_ELEV=8 python gen_camera_poses.py --preview-only --task lift`.
 
 ## Setup note (important)
 

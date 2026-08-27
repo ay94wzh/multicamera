@@ -44,7 +44,12 @@ DEFAULT_CAMERAS = [
     ("left", -55.0, 10.0),
     ("right", 55.0, 10.0),
     ("top", 0.0, 60.0),
-    ("bottom", 0.0, -18.0),
+    # bottom was -18°: camera at z = 0.8 + 1.2*sin(-18°) ~= 0.43 m sat BELOW the
+    # tabletop (z=0.8) and could only see the table's underside. +5° is the
+    # lowest angle that still clears the table (z ~= 0.905 m, ~10 cm above it):
+    # it looks slightly up at the gripper (fingers land mid-frame during a
+    # grasp) while the cube on the table stays visible below.
+    ("bottom", 0.0, 5.0),
 ]
 
 # Task -> robosuite env name (same mapping as gen_robosuite_format_demo.py)
