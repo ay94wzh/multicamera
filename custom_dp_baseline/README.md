@@ -44,8 +44,9 @@ cd custom_camera_demos
 python gen_camera_poses.py --task lift --train_demos 200 --test_demos 50 --eval_episodes 50
 
 # 2. record demos on the classic task (static setup by origin; object placement
-#    and the end-effector pose stay random per demo)
-python gen_demos_with_cameras.py --task lift --num_demos 200 \
+#    and the end-effector pose stay random per demo). 210 = 200 train + 10 val
+#    (load_data asserts num_episodes + 10 <= demos, utils.py:517)
+python gen_demos_with_cameras.py --task lift --num_demos 210 \
     --action_spaces eef_delta --output_files eef_delta.hdf5 \
     --poses_json camera_poses/custom_cameras.json --image_size 128
 
@@ -91,6 +92,11 @@ Everything lands under `<ckpt_dir>` (= `checkpoints/<name>` next to this folder)
   `ckpt_dir`). The last 7 chars of the name are treated as the seed for the wandb
   group; keep the `_seed0` suffix.
 - `WANDB_MODE=offline` avoids network dependency; `--eval_only` skips wandb entirely.
+- **Train without in-loop eval**: pass `--eval_every 0` to disable the in-loop
+  evaluation (the origin loop always evaluates at epoch 0 and every
+  `--eval_every` epochs; `0` skips all of it). Train first, then evaluate the
+  saved checkpoint with `--eval_only` (steps 4a/4b) — the pose files are
+  loaded fresh there.
 - `--batch_size 16` is sized for 4 x 256x256 images; rendering
   (4 renders per sample, `num_workers=0`) is the throughput bottleneck.
 - **GPU memory**: the origin DP model is ~264M params — the optimizer step alone

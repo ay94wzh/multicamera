@@ -160,7 +160,7 @@ def main(args, ckpt=None):
                     wandb.log({f'val_{k}': v.item()}, step=epoch)
 
         # Evaluation
-        if epoch % args.eval_every == 0:
+        if args.eval_every > 0 and epoch % args.eval_every == 0:
             episode_count = 50 if epoch > args.eval_start_epoch else args.eval_episodes
             run_eval(policy, evaluator, f"epoch_{epoch}", episode_count, args, step=epoch)
 
@@ -280,7 +280,9 @@ if __name__ == '__main__':
     parser.add_argument('--patch_size', type=int, default=8, help='patch size')
 
     # Evaluation config
-    parser.add_argument('--eval_every', type=int, default=1000, help='evaluate every N epochs')
+    parser.add_argument('--eval_every', type=int, default=1000,
+                        help='evaluate every N epochs; 0 = never eval during training '
+                             '(train only, then eval with --eval_only on the saved checkpoint)')
     parser.add_argument('--eval_episodes', type=int, default=10, help='number of evaluation episodes')
     parser.add_argument('--eval_only', default=False, type=str2bool,
                         help='evaluate a saved checkpoint and exit (no training, no wandb)')
