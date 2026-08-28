@@ -175,7 +175,7 @@ def main(args, ckpt=None):
                 'loss': epoch_summary['loss'], 
                 'wandb_id': wandb.run.id
             }, checkpoint_path)
-            cleanup_ckpt(args.ckpt_dir, keep=3)  # Keep last 3 checkpoints
+            cleanup_ckpt(args.ckpt_dir, keep=args.keep_ckpt)  # Keep the last N checkpoints
 
             if time.time() - start_time > 7.5 * 60 * 60:
                 print(f"⏰ Time limit reached ({(time.time() - start_time)/3600:.1f} hours). Exiting...")
@@ -253,6 +253,9 @@ if __name__ == '__main__':
     parser.add_argument('--save_every', type=int, default=1000, help='save checkpoint every N epochs')
     parser.add_argument('--save_start_epoch', type=int, default=0,
                         help='only save checkpoints from this epoch onward (0 = from the start)')
+    parser.add_argument('--keep_ckpt', type=int, default=3,
+                        help='keep the last N epoch_*.pth files (cleanup deletes older ones; '
+                             'raise to e.g. 5 to keep all of a 400/425/450/475/500 schedule)')
     parser.add_argument('--use_fp16', default=True, type=str2bool, help='use mixed precision bf16 training')
     
     # Dataloader config
