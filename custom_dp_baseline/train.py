@@ -160,12 +160,12 @@ def main(args, ckpt=None):
                     wandb.log({f'val_{k}': v.item()}, step=epoch)
 
         # Evaluation
-        if args.eval_every > 0 and epoch % args.eval_every == 0:
+        if args.eval_every > 0 and epoch >= args.eval_start_epoch and epoch % args.eval_every == 0:
             episode_count = 50 if epoch > args.eval_start_epoch else args.eval_episodes
             run_eval(policy, evaluator, f"epoch_{epoch}", episode_count, args, step=epoch)
 
         # Save checkpoint
-        if epoch % args.save_every == 0:
+        if epoch >= args.save_start_epoch and epoch % args.save_every == 0:
             checkpoint_path = os.path.join(args.ckpt_dir, f'epoch_{epoch}.pth')
             torch.save({
                 'epoch': epoch, 
@@ -245,9 +245,14 @@ if __name__ == '__main__':
     parser.add_argument('--batch_size', default=70, type=int, help='batch_size')
     parser.add_argument('--seed', default=0, type=int, help='seed')
     parser.add_argument('--num_epochs', default=30_001, type=int, help='num_epochs')
-    parser.add_argument('--eval_start_epoch', type=int, default=20_000, help='start evaluating 50 at this epoch')
+    parser.add_argument('--eval_start_epoch', type=int, default=20_000,
+                        help='first epoch that triggers in-loop eval (eval only fires at '
+                             'epochs >= this where epoch % eval_every == 0); before it, evals '
+                             'use --eval_episodes episodes, from it on 50')
     parser.add_argument('--lr', type=float, default=2e-5, help='lr')
     parser.add_argument('--save_every', type=int, default=1000, help='save checkpoint every N epochs')
+    parser.add_argument('--save_start_epoch', type=int, default=0,
+                        help='only save checkpoints from this epoch onward (0 = from the start)')
     parser.add_argument('--use_fp16', default=True, type=str2bool, help='use mixed precision bf16 training')
     
     # Dataloader config
