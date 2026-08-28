@@ -138,7 +138,11 @@ def main(args, ckpt=None):
     
     pbar = tqdm.tqdm(total=args.num_epochs, desc="Training")
     pbar.update(epoch)
-    
+
+    # Guard for a save firing on the first loop iteration after resume
+    # (epoch_summary is normally produced by the training block below).
+    epoch_summary = {'loss': float('nan')}
+
     while epoch < args.num_epochs:
         
         # Check OpenGL framebuffer. This is a hack to fix the renderer issue in robosuite.
